@@ -1,77 +1,89 @@
-const docsList =
-document.getElementById("docs-list");
+const cache = new Map();
 
-const markdownContent =
-document.getElementById("markdown-content");
+async function loadMarkdown(file, { signal } = {}) {
+  if (!file) return;
 
-async function loadDocsList()
-{
-    const response =
-    await fetch("/data/docs.json");
+  // Loading UI
+  markdownContent.innerHTML = '<p class="loading">Loading…</p>';
 
-    const files =
-    await response.json();
+  // Return cached content if present
+  if (cache.has(file)) {
+    renderMarkdown(cache.get(file), file);
+    return;
+  }
 
-    docsList.innerHTML = "";
+  const controller = new AbortController();
+  const combinedSignal = signal ? mergeSignals(signal, controller.signal) : controller.signal;
+  const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-    files.forEach(file =>
-    {
-        const button =
-        document.createElement("button");
+  try {
+    const response = await fetch("/docs/md/" + encodeURIComponent(file), { signal: combinedSignal });
+    clearTimeout(timeout);
 
-        button.className =
-        "doc-button";
-
-        button.textContent =
-        file.replace(".md","");
-
-        button.onclick = () =>
-        {
-            location.hash =
-            file;
-        };
-
-        docsList.appendChild(button);
-    });
-
-    if(location.hash)
-    {
-        loadMarkdown(
-            location.hash.substring(1)
-        );
+    if (!response.ok) {
+      markdownContent.innerHTML = `
+        <h1>404</h1>
+        <p>Document not found.</p>
+      `;
+      return;
     }
-    else
-    {
-        loadMarkdown(files[0]);
+
+    const markdown = await response.text();
+
+    // Convert markdown -> HTML
+    const html = marked.parse(markdown);
+    // If you want sanitization, uncomment the next line and include DOMPurify in your page:
+    // const safeHtml = DOMPurify.sanitize(html);
+
+    // cache
+    cache.set(file, html);
+
+    renderMarkdown(html, file);
+  } catch (err) {
+    clearTimeout(timeout);
+    if (err.name === "AbortError") {
+      markdownContent.innerHTML = '<p class="error">Request timed out or was cancelled.</p>';
+    } else {
+      markdownContent.innerHTML = '<p class="error">Failed to load document.</p>';
+      console.error("loadMarkdown:", err);
     }
+  }
 }
 
-async function loadMarkdown(file)
-{
-    const response =
-    await fetch("/docs/md/" + file);
+function renderMarkdown(html, file) {
+  markdownContent.innerHTML = html;
 
-    const markdown =
-    await response.text();
+  // Safe-ish title
+  try {
+    const title = decodeURIComponent(file).replace(/\.md$/i, "") || "Document";
+    document.title = `${title} - fv3-cpp`;
+  } catch (e) {
+    document.title = `fv3-cpp`;
+  }
 
-    markdownContent.innerHTML =
-    marked.parse(markdown);
+  // Scroll to top
+  try {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (e) {
+    window.scrollTo(0, 0);
+  }
 
-    setTimeout(() =>
-    {
-        generateTOC();
-    },50);
+  // Generate TOC after paint
+  requestAnimationFrame(() => {
+    generateTOC();
+  });
 }
 
-window.addEventListener(
-    "hashchange",
-    () =>
-    {
-        const file =
-        location.hash.substring(1);
+// Helper to merge AbortSignals
+function mergeSignals(...signals) {
+  const controller = new AbortController();
+  const onAbort = () => controller.abort();
 
-        loadMarkdown(file);
-    }
-);
+  signals.forEach(s => {
+    if (!s) return;
+    if (s.aborted) controller.abort();
+    else s.addEventListener("abort", onAbort, { once: true });
+  });
 
-loadDocsList();
+  return controller.signal;
+}
