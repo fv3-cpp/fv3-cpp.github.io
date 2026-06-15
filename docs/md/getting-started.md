@@ -1,16 +1,16 @@
-# Getting Started
+# はじめに
 
-Welcome to fv3-cpp.
+fv3-cppへようこそ。
 
-## Installation
+## インストール
 
-Follow the installation guide.
+インストールガイドに従ってください。
 
-## Build
+## ビルド
 
-Build the project.
+プロジェクトをビルドします。
 
-## First Program
+## 最初のプログラム
 
 ```cpp
 #include <iostream>
