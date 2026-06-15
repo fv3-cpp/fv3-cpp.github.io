@@ -1,6 +1,17 @@
-[
+{
+  "ポインター": [
+    "pointer/intro.md",
+    "pointer/smart-pointer.md"
+  ],
+
+  "オブジェクト": [
+    "object/class.md",
+    "object/inheritance.md"
+  ],
+
+  "その他": [
     "getting-started.md",
-    "installation.md",
-    "build.md",
-    "api.md"
-]
+    "api.md",
+    "roadmap.md"
+  ]
+}
