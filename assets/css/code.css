@@ -1,0 +1,19 @@
+pre{
+    background:#111;
+    color:#ddd;
+    padding:20px;
+    border-radius:10px;
+    overflow:auto;
+}
+
+.kw{
+    color:#569cd6;
+}
+
+.str{
+    color:#ce9178;
+}
+
+.com{
+    color:#6a9955;
+}
