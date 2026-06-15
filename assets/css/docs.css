@@ -1,0 +1,22 @@
+.dark {
+    background: #121212;
+    color: white;
+}
+
+.dark a {
+    color: #8ab4ff;
+}
+
+#sidebar {
+    width: 280px;
+}
+
+#sidebar h3 {
+    margin-top: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.loading {
+    padding: 30px;
+    text-align: center;
+}
