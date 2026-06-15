@@ -20,3 +20,16 @@
     padding: 30px;
     text-align: center;
 }
+.search-box {
+    width: 300px;
+    max-width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-sizing: border-box;
+    margin: 12px 0;
+}
+
+#search-results {
+    max-width: 800px;
+}
