@@ -1,0 +1,45 @@
+.search-result{
+
+display:block;
+
+padding:12px;
+
+border:
+1px solid var(--border);
+
+border-radius:8px;
+
+margin-bottom:8px;
+
+text-decoration:none;
+
+color:var(--text);
+
+background:
+var(--bg);
+
+}
+
+.search-result:hover{
+
+background:
+var(--bg-secondary);
+
+}
+
+.search-result strong{
+
+display:block;
+
+margin-bottom:4px;
+
+}
+
+.search-result div{
+
+font-size:.9rem;
+
+color:
+var(--text-secondary);
+
+}
